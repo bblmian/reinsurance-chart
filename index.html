@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>再保险比例绘图器</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>再保险比例绘图器</h1>
+        <div class="content">
+            <div class="input-section">
+                <textarea id="input" placeholder="请在此输入数据"></textarea>
+                <div class="button-container">
+                    <button onclick="drawChart()">绘制图表</button>
+                    <button onclick="downloadPNG()">下载PNG</button>
+                </div>
+                <div class="control-panel">
+                    <div class="font-size-control">
+                        <label for="font-size">字体大小：</label>
+                        <input type="number" id="font-size" value="12" min="6" max="24" step="1">
+                        <button onclick="changeFontSize(-1)">-</button>
+                        <button onclick="changeFontSize(1)">+</button>
+                    </div>
+                    <div class="scale-control">
+                        <label for="scale">图形缩放：</label>
+                        <input type="range" id="scale" min="50" max="150" value="100" step="1">
+                        <span id="scale-value">100%</span>
+                    </div>
+                </div>
+            </div>
+            <div id="chart-container">
+                <canvas id="chart"></canvas>
+            </div>
+            <div id="color-legend" class="color-legend"></div>
+        </div>
+    </div>
+    <div id="color-picker-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>选择颜色</h2>
+            <div id="color-matrix"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
