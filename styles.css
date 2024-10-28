@@ -1,0 +1,302 @@
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    background-color: #ffffff;
+    border: 1px solid #e9ecef;
+    padding: 30px;
+    width: 1200px;
+    max-width: 95%;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    color: #343a40;
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 300;
+}
+
+.content {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start;
+    flex-wrap: wrap; /* 允许内容换行 */
+}
+
+.input-section {
+    flex: 0 0 40%;
+    max-width: 400px;
+    min-width: 300px; /* 添加最小宽度 */
+}
+
+#input {
+    width: 100%;
+    height: 200px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    padding: 10px;
+    font-size: 14px;
+    resize: vertical;
+}
+
+.button-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+.control-panel {
+    margin-top: 15px;
+}
+
+.font-size-control, .scale-control {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+#font-size, #scale {
+    width: 100px;
+}
+
+#chart-container {
+    flex: 1;
+    min-width: 500px;
+    min-height: 500px;
+    overflow: auto;
+    padding: 20px;
+    box-sizing: border-box;
+    margin: 0 auto; /* 居中显示 */
+}
+
+#chart {
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    display: block;
+    margin: 0 auto;
+}
+
+#bottom-right-handle {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #007bff;
+    cursor: nwse-resize;
+    right: -5px;
+    bottom: -5px;
+}
+
+.color-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.color-item {
+    display: flex;
+    align-items: center;
+    margin: 5px 10px;
+    cursor: pointer;
+}
+
+.color-box {
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+    border: 1px solid #000;
+}
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#color-matrix {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.color-option {
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000;
+    cursor: pointer;
+}
+
+/* 在现有的 .modal-content 样式后添加 */
+.instructions-btn {
+    background-color: #28a745;
+}
+
+.instructions-btn:hover {
+    background-color: #218838;
+}
+
+.instructions-content {
+    max-width: 600px;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.instructions-text {
+    line-height: 1.6;
+    color: #333;
+}
+
+.instructions-text pre {
+    background-color: #f8f9fa;
+    padding: 15px;
+    border-radius: 4px;
+    overflow-x: auto;
+    border: 1px solid #dee2e6;
+    margin: 15px 0;
+}
+
+.instructions-text code {
+    background-color: #f8f9fa;
+    padding: 2px 4px;
+    border-radius: 3px;
+    color: #e83e8c;
+}
+
+.instructions-text ul {
+    padding-left: 20px;
+    margin: 10px 0;
+}
+
+.instructions-text li {
+    margin: 5px 0;
+}
+
+/* 在其他按钮样式后添加 */
+.reset-btn {
+    background-color: #dc3545;
+}
+
+.reset-btn:hover {
+    background-color: #c82333;
+}
+
+.capacity-summary {
+    width: 100%;
+    margin-top: 20px;
+    padding: 15px;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    border: 1px solid #dee2e6;
+}
+
+.capacity-summary h3 {
+    color: #343a40;
+    margin-top: 0;
+    margin-bottom: 10px;
+    font-size: 18px;
+}
+
+.capacity-text {
+    font-family: monospace;
+    white-space: pre-wrap;
+    margin: 0;
+    padding: 10px;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.capacity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.copy-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    background-color: #6c757d;
+}
+
+.copy-btn:hover {
+    background-color: #5a6268;
+}
+
+/* 添加缺失部分的样式 */
+@keyframes stripesAnimation {
+    from {background-position: 0 0;}
+    to {background-position: 50px 50px;}
+}
+
+.missing-pattern {
+    background-color: #f5f5f5;
+    background-image: linear-gradient(
+        45deg,
+        #ff000033 25%,
+        transparent 25%,
+        transparent 50%,
+        #ff000033 50%,
+        #ff000033 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 10px 10px;
+    animation: stripesAnimation 2s linear infinite;
+}
