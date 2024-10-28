@@ -361,7 +361,7 @@ function downloadPNG() {
         highResCanvas.width = img.width * scaleFactor;
         highResCanvas.height = img.height * scaleFactor;
 
-        // 绘制 SVG 到高分辨率 canvas
+        // 绘制 SVG 到高分率 canvas
         ctx.scale(scaleFactor, scaleFactor);
         ctx.drawImage(img, 0, 0);
 
@@ -387,7 +387,7 @@ function canvasToSVG(canvas) {
     const ctx = canvas.getContext('2d');
     let svg = '';
 
-    // 遍历 Canvas ��的所有路径和文本
+    // 遍历 Canvas 的所有路径和文本
     ctx.getImageData(0, 0, canvas.width, canvas.height);
     
     // 这里需要实现将 Canvas 绘图命令转换为 SVG 元素的逻辑
@@ -425,7 +425,7 @@ document.getElementById('scale').addEventListener('input', function() {
     changeScale(parseInt(this.value));
 });
 
-// 确保在页面加载时���用默认字号绘制图表
+// 确保在页面加载时用默认字号绘制图表
 window.onload = function() {
     fontSize = 12; // 设置默认字号
     document.getElementById('font-size').value = fontSize;
@@ -500,6 +500,53 @@ function selectColor(color) {
 function closeColorPicker() {
     const modal = document.getElementById('color-picker-modal');
     modal.style.display = 'none';
+}
+
+function showInstructions() {
+    document.getElementById('instructions-modal').style.display = 'block';
+}
+
+function closeInstructions() {
+    document.getElementById('instructions-modal').style.display = 'none';
+}
+
+// 点击模态框外部时关闭
+window.onclick = function(event) {
+    let modal = document.getElementById('instructions-modal');
+    if (event.target == modal) {
+        modal.style.display = 'none';
+    }
+}
+
+function resetChart() {
+    // 清空输入框
+    document.getElementById('input').value = '';
+    
+    // 重置画布
+    const canvas = document.getElementById('chart');
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 重置颜色生成标志
+    colorsGenerated = false;
+    globalColors = {};
+    
+    // 清空成员集合
+    members.clear();
+    
+    // 清空颜色图例
+    document.getElementById('color-legend').innerHTML = '';
+    
+    // 重置字体大小和缩放比例到默认值
+    fontSize = 12;
+    scale = 100;
+    document.getElementById('font-size').value = fontSize;
+    document.getElementById('scale').value = scale;
+    document.getElementById('scale-value').textContent = '100%';
+    
+    // 重置画布大小
+    canvas.width = chartSize;
+    canvas.height = chartSize;
 }
 
 drawChart(); // 初始绘制图表

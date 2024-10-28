@@ -16,6 +16,8 @@
                 <div class="button-container">
                     <button onclick="drawChart()">绘制图表</button>
                     <button onclick="downloadPNG()">下载PNG</button>
+                    <button onclick="showInstructions()" class="instructions-btn">使用说明</button>
+                    <button onclick="resetChart()" class="reset-btn">重新绘制</button>
                 </div>
                 <div class="control-panel">
                     <div class="font-size-control">
@@ -42,6 +44,35 @@
             <span class="close">&times;</span>
             <h2>选择颜色</h2>
             <div id="color-matrix"></div>
+        </div>
+    </div>
+    <div id="instructions-modal" class="modal">
+        <div class="modal-content instructions-content">
+            <span class="close" onclick="closeInstructions()">&times;</span>
+            <h2>使用说明</h2>
+            <div class="instructions-text">
+                <p>请按以下格式在输入框中输入再保险比例结构：</p>
+                <pre>
+#1-50:ABC,100
+#2-150:XYZ,70|DEF,30
+#3-200:XYZ,25|MNO,15|DEF,60
+#4-300:XYZ,10|MNO,20|PQR,30|DEF,40
+#5-400:DEF,100</pre>
+                <p><strong>格式说明：</strong></p>
+                <ul>
+                    <li><code>#1-50</code>：表示第1层，层高为50</li>
+                    <li><code>ABC,100</code>：表示公司ABC占比100%</li>
+                    <li>使用竖线 | 分隔同一层的不同公司</li>
+                    <li>每行表示一个层级，层级号必须连续</li>
+                    <li>每层的所有公司占比之和必须等于100%</li>
+                </ul>
+                <p><strong>注意事项：</strong></p>
+                <ul>
+                    <li>请确保格式准确，包括冒号、逗号和竖线的使用</li>
+                    <li>数字可以使用小数点，如25.5</li>
+                    <li>公司名称请使用英文字母或数字</li>
+                </ul>
+            </div>
         </div>
     </div>
     <script src="script.js"></script>
