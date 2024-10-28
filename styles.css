@@ -261,3 +261,42 @@ button:hover {
     font-size: 14px;
     line-height: 1.5;
 }
+
+.capacity-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.copy-btn {
+    padding: 5px 10px;
+    font-size: 12px;
+    background-color: #6c757d;
+}
+
+.copy-btn:hover {
+    background-color: #5a6268;
+}
+
+/* 添加缺失部分的样式 */
+@keyframes stripesAnimation {
+    from {background-position: 0 0;}
+    to {background-position: 50px 50px;}
+}
+
+.missing-pattern {
+    background-color: #f5f5f5;
+    background-image: linear-gradient(
+        45deg,
+        #ff000033 25%,
+        transparent 25%,
+        transparent 50%,
+        #ff000033 50%,
+        #ff000033 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 10px 10px;
+    animation: stripesAnimation 2s linear infinite;
+}

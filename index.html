@@ -39,7 +39,10 @@
             <div id="color-legend" class="color-legend"></div>
             <!-- 在 color-legend div 后添加 -->
             <div id="capacity-summary" class="capacity-summary">
-                <h3>承保能力汇总</h3>
+                <div class="capacity-header">
+                    <h3>承保能力汇总</h3>
+                    <button onclick="copyCapacityText()" class="copy-btn">复制</button>
+                </div>
                 <pre id="capacity-text" class="capacity-text"></pre>
             </div>
         </div>

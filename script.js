@@ -30,19 +30,27 @@ const colorOptions = {
 let currentMember = '';
 
 function drawChart(ctx = null, width = null, height = null, generateSVG = false) {
+    // 获取输入并清除画布
     const input = document.getElementById('input').value;
     const canvas = ctx ? { getContext: () => ctx, width: width, height: height } : document.getElementById('chart');
     ctx = ctx || canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
     
+    // 重置画布大小到初始状态
+    canvas.width = chartSize;
+    canvas.height = chartSize;
+    
+    // 清空成员列表，但保留颜色映射
+    members.clear();
+    
+    // 解析输入数据（每次都重新解析）
     const layers = parseAndPreprocessInput(input);
+    if (!layers || layers.length === 0) return;
+    
     const totalHeight = layers.reduce((sum, layer) => sum + layer.height, 0);
-    if (!colorsGenerated) {
-        globalColors = {}; // 只有在第一次绘制时重置颜色
-        colorsGenerated = true;
-    }
-
+    
     // 计算基于字体大小的缩放因子
-    const fontScaleFactor = fontSize / 12; // 12 是默认字体大小
+    const fontScaleFactor = fontSize / 12;
     const scaledSize = chartSize * (scale / 100) * fontScaleFactor;
     
     // 计算层厚度标签所需的最大宽度
@@ -172,9 +180,9 @@ function drawChart(ctx = null, width = null, height = null, generateSVG = false)
             
             // 绘制文字，使用合并单元格的中心位置
             if (generateSVG) {
-                svgContent += drawAdaptiveText(ctx, item.name, item.percentage, x, mergeY, width, mergeHeight, generateSVG);
+                svgContent += drawAdaptiveText(ctx, item.name, item.percentage, x, mergeY, width, mergeHeight, generateSVG, item.isMissing);
             } else {
-                drawAdaptiveText(ctx, item.name, item.percentage, x, mergeY, width, mergeHeight, generateSVG);
+                drawAdaptiveText(ctx, item.name, item.percentage, x, mergeY, width, mergeHeight, generateSVG, item.isMissing);
             }
             
             x += width;
@@ -251,6 +259,8 @@ function parseAndPreprocessInput(input) {
     if (!input || !input.trim()) {
         return [];
     }
+    
+    // 每次都创建新的图层数组
     const lines = input.trim().split('\n');
     const layers = lines.map((line, index) => {
         const parts = line.split(':');
@@ -278,12 +288,32 @@ function parseAndPreprocessInput(input) {
                 merged: false
             };
         }).filter(item => item !== null);
+
+        // 计算总份额
+        const totalPercentage = items.reduce((sum, item) => sum + item.percentage, 0);
+        
+        // 如果总份额小于100%，添加MISS项
+        if (totalPercentage < 100) {
+            items.push({
+                name: 'MISS',
+                percentage: 100 - totalPercentage,
+                mergeHeight: parseInt(height),
+                mergeStartLayer: index,
+                merged: false,
+                isMissing: true
+            });
+        }
+
         return { height: parseInt(height), items };
     }).filter(layer => layer !== null);
 
-    // 处理合并
+    // 重新处理合并逻辑
     for (let i = 1; i < layers.length; i++) {
         layers[i].items.forEach(item => {
+            // 重置合并标志
+            item.merged = false;
+            item.mergedInto = null;
+            
             const prevLayerItem = layers[i-1].items.find(prevItem => 
                 prevItem.name === item.name && 
                 Math.abs(prevItem.percentage - item.percentage) < 0.01 &&
@@ -300,7 +330,31 @@ function parseAndPreprocessInput(input) {
     return layers;
 }
 
-function drawAdaptiveText(ctx, name, percentage, x, y, width, height, generateSVG) {
+function drawAdaptiveText(ctx, name, percentage, x, y, width, height, generateSVG, isMissing = false) {
+    let svgText = '';
+    
+    // 如果是缺失部分，先绘制斜纹背景
+    if (isMissing) {
+        if (!generateSVG) {
+            const pattern = ctx.createPattern(createStripePattern(), 'repeat');
+            ctx.fillStyle = pattern;
+            ctx.fillRect(x, y, width, height);
+        } else {
+            // 为每个缺失部分创建唯一的pattern ID
+            const patternId = `missingPattern_${x}_${y}`;
+            svgText += `
+                <defs>
+                    <pattern id="${patternId}" patternUnits="userSpaceOnUse" width="10" height="10" patternTransform="rotate(45)">
+                        <rect width="10" height="10" fill="#f5f5f5"/>
+                        <rect width="5" height="10" fill="#ff000033"/>
+                    </pattern>
+                </defs>
+                <rect x="${x}" y="${y}" width="${width}" height="${height}" fill="url(#${patternId})"/>
+            `;
+        }
+    }
+
+    // 继续原有的文字绘制逻辑
     ctx.fillStyle = 'black';
     ctx.font = `${fontSize}px Arial`;
     const text = `${name} (${percentage}%)`;
@@ -314,7 +368,6 @@ function drawAdaptiveText(ctx, name, percentage, x, y, width, height, generateSV
     const centerX = x + width / 2;
     const centerY = y + height / 2;
 
-    let svgText = '';
     if (textWidth > width - 4 && height > textHeight) {
         // 如果文字宽度大于格子宽度-4，且高度足够，则旋转90度
         ctx.translate(centerX, centerY);
@@ -322,14 +375,14 @@ function drawAdaptiveText(ctx, name, percentage, x, y, width, height, generateSV
         ctx.fillText(text, 0, 0);
         
         if (generateSVG) {
-            svgText = `<text x="${centerX}" y="${centerY}" font-size="${fontSize}" text-anchor="middle" dominant-baseline="middle" fill="black" transform="rotate(-90 ${centerX} ${centerY})">${text}</text>`;
+            svgText += `<text x="${centerX}" y="${centerY}" font-size="${fontSize}" text-anchor="middle" dominant-baseline="middle" fill="black" transform="rotate(-90 ${centerX} ${centerY})">${text}</text>`;
         }
     } else {
         // 否则正常绘制
         ctx.fillText(text, centerX, centerY);
         
         if (generateSVG) {
-            svgText = `<text x="${centerX}" y="${centerY}" font-size="${fontSize}" text-anchor="middle" dominant-baseline="middle" fill="black">${text}</text>`;
+            svgText += `<text x="${centerX}" y="${centerY}" font-size="${fontSize}" text-anchor="middle" dominant-baseline="middle" fill="black">${text}</text>`;
         }
     }
 
@@ -579,7 +632,7 @@ function calculateCapacity(layers) {
     // 生成格式化的文本
     let summaryText = 'Capacity:\n';
     
-    // 计算每个成员的总额并格式化输出
+    // 计算个成员的总额并格式化输出
     Object.entries(memberCapacity).forEach(([member, capacities]) => {
         const total = capacities.reduce((sum, cap) => sum + parseFloat(cap), 0).toFixed(2);
         const capacityDetail = capacities.join('M + ');
@@ -590,6 +643,41 @@ function calculateCapacity(layers) {
     });
 
     return summaryText;
+}
+
+// 添加复制功能
+function copyCapacityText() {
+    const text = document.getElementById('capacity-text').textContent;
+    navigator.clipboard.writeText(text).then(() => {
+        const copyBtn = document.querySelector('.copy-btn');
+        copyBtn.textContent = '已复制';
+        setTimeout(() => {
+            copyBtn.textContent = '复制';
+        }, 2000);
+    });
+}
+
+// 创建斜纹图案的辅助函数
+function createStripePattern() {
+    const patternCanvas = document.createElement('canvas');
+    const patternCtx = patternCanvas.getContext('2d');
+    patternCanvas.width = 10;
+    patternCanvas.height = 10;
+
+    // 绘制背景
+    patternCtx.fillStyle = '#f5f5f5';
+    patternCtx.fillRect(0, 0, 10, 10);
+
+    // 绘制斜纹
+    patternCtx.fillStyle = '#ff000033';
+    patternCtx.beginPath();
+    patternCtx.moveTo(0, 0);
+    patternCtx.lineTo(10, 10);
+    patternCtx.lineTo(5, 10);
+    patternCtx.lineTo(0, 5);
+    patternCtx.fill();
+
+    return patternCanvas;
 }
 
 drawChart(); // 初始绘制图表
