@@ -238,6 +238,12 @@ function drawChart(ctx = null, width = null, height = null, generateSVG = false)
         updateColorLegend();
     }
 
+    // 在绘制图表后计算并显示承接额度
+    if (!generateSVG) {
+        const capacityText = calculateCapacity(layers);
+        document.getElementById('capacity-text').textContent = capacityText;
+    }
+
     return generateSVG ? svgContent : null;
 }
 
@@ -547,6 +553,43 @@ function resetChart() {
     // 重置画布大小
     canvas.width = chartSize;
     canvas.height = chartSize;
+
+    // 清空承接额度显示
+    document.getElementById('capacity-text').textContent = '';
+}
+
+function calculateCapacity(layers) {
+    // 创建一个对象来存储每个成员的承接额度
+    const memberCapacity = {};
+    
+    // 遍历每一层计算承接额度
+    layers.forEach(layer => {
+        const layerHeight = layer.height;
+        layer.items.forEach(item => {
+            if (item.percentage > 0 && !item.merged) {
+                const capacity = (layerHeight * item.percentage / 100).toFixed(2);
+                if (!memberCapacity[item.name]) {
+                    memberCapacity[item.name] = [];
+                }
+                memberCapacity[item.name].push(capacity);
+            }
+        });
+    });
+
+    // 生成格式化的文本
+    let summaryText = 'Capacity:\n';
+    
+    // 计算每个成员的总额并格式化输出
+    Object.entries(memberCapacity).forEach(([member, capacities]) => {
+        const total = capacities.reduce((sum, cap) => sum + parseFloat(cap), 0).toFixed(2);
+        const capacityDetail = capacities.join('M + ');
+        // 使用空格对齐
+        summaryText += `${member}:`.padEnd(20) + 
+                      `${capacityDetail}M`.padEnd(40) + 
+                      `= ${total} M\n`;
+    });
+
+    return summaryText;
 }
 
 drawChart(); // 初始绘制图表

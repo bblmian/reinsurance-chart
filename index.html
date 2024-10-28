@@ -37,6 +37,11 @@
                 <canvas id="chart"></canvas>
             </div>
             <div id="color-legend" class="color-legend"></div>
+            <!-- 在 color-legend div 后添加 -->
+            <div id="capacity-summary" class="capacity-summary">
+                <h3>承保能力汇总</h3>
+                <pre id="capacity-text" class="capacity-text"></pre>
+            </div>
         </div>
     </div>
     <div id="color-picker-modal" class="modal">
@@ -49,18 +54,18 @@
     <div id="instructions-modal" class="modal">
         <div class="modal-content instructions-content">
             <span class="close" onclick="closeInstructions()">&times;</span>
-            <h2>使用说明</h2>
+            <h2>使用明</h2>
             <div class="instructions-text">
                 <p>请按以下格式在输入框中输入再保险比例结构：</p>
                 <pre>
-#1-50:ABC,100
-#2-150:XYZ,70|DEF,30
-#3-200:XYZ,25|MNO,15|DEF,60
-#4-300:XYZ,10|MNO,20|PQR,30|DEF,40
-#5-400:DEF,100</pre>
+#1-2:NPP,100
+#2-100:CGN,60|CNIP,40
+#3-340:CGN,20.25|TPRe,0|NIRA,2.95|NC,4.7|HDI,2.5|CNIP,69.6
+#4-660:CGN,3.2|TPRe,4|NIRA,11|NC,9.7|HDI,2.5|CNIP,69.6
+#5-900:CNIP,100</pre>
                 <p><strong>格式说明：</strong></p>
                 <ul>
-                    <li><code>#1-50</code>：表示第1层，层高为50</li>
+                    <li><code>#1-2</code>：表示第1层，层高为2百万美元</li>
                     <li><code>ABC,100</code>：表示公司ABC占比100%</li>
                     <li>使用竖线 | 分隔同一层的不同公司</li>
                     <li>每行表示一个层级，层级号必须连续</li>
@@ -71,7 +76,19 @@
                     <li>请确保格式准确，包括冒号、逗号和竖线的使用</li>
                     <li>数字可以使用小数点，如25.5</li>
                     <li>公司名称请使用英文字母或数字</li>
+                    <li>层高单位为百万美元(Million USD)</li>
                 </ul>
+                <p><strong>承接额度计算示例：</strong></p>
+                <pre>
+承接额度计算方式：
+层高 × 承保比例 = 承接额度(Million USD)
+
+示例：
+某公司在第3层(340M)占比20.25% = 68.85M
+某公司在第4层(660M)占比4% = 26.4M
+
+总承接额度 = 各层承接额度之和
+如：68.85M + 26.4M = 95.25M</pre>
             </div>
         </div>
     </div>
